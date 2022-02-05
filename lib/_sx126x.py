@@ -2,6 +2,8 @@ from sys import implementation
 
 if implementation.name == 'micropython':
   from utime import sleep_ms
+  from micropython import const
+
 
 if implementation.name == 'circuitpython':
     from time import sleep

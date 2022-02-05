@@ -37,17 +37,15 @@ if implementation.name == 'circuitpython':
 
 class SX126X:
 
-    def __init__(self, cs, irq, rst, gpio, clk='P10', mosi='P11', miso='P14'):
+    def __init__(self, cs, irq, rst, gpio, clk=10, mosi=11, miso=12):
         self._irq = irq
         if implementation.name == 'micropython':
-          try:
-              self.spi = SPI(0, mode=SPI.MASTER, baudrate=2000000, pins=(clk, mosi, miso))  # Pycom variant uPy
-          except:
-              self.spi = SPI(0, baudrate=2000000, pins=(clk, mosi, miso))                   # Generic variant uPy
           self.cs = Pin(cs, mode=Pin.OUT)
           self.irq = Pin(irq, mode=Pin.IN)
           self.rst = Pin(rst, mode=Pin.OUT)
           self.gpio = Pin(gpio, mode=Pin.IN)
+          self.spi = SPI(1, baudrate=2000000, sck=Pin(clk), mosi=Pin(mosi), miso=Pin(miso))                   # Rpi 2040
+
 
         if implementation.name == 'circuitpython':
           self.spi = busio.SPI(clk, MOSI=mosi, MISO=miso)
@@ -57,6 +55,9 @@ class SX126X:
           self.spi.unlock()
           self.cs = digitalio.DigitalInOut(cs)
           self.cs.switch_to_output(value=True)
+          
+          
+          
           self.irq = digitalio.DigitalInOut(irq)
           self.irq.switch_to_input()
           self.rst = digitalio.DigitalInOut(rst)
